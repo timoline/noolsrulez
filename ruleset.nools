@@ -1,0 +1,68 @@
+global t = 0;
+/*
+rule boilerwatertemperature {
+    when {
+        m1: Message m1.t == "events/otgw/otmonitor/boilerwatertemperature" ;
+    }
+    then {
+        console.log("RULES", "Rule triggered: boilerwatertemperature " + m1.p);		
+	
+        forget(m1);
+    }
+}
+
+rule flame {
+    when {
+        m1: Message m1.t == "events/otgw/otmonitor/flame" && m1.p == "1";
+    }
+    then {
+        console.log("RULES", "Rule triggered: flame on");
+
+        forget(m1);
+    }
+}
+
+*/
+/*
+rule fridge {
+    when {
+        m1: Message m1.t == "events/rflink/newkaku/00fb09de/a/cmd" && m1.changed ;
+			
+    }
+    then {
+        console.log("RULES", "Rule triggered: fridge " + (m1.p) );
+        unchange(m1);
+		
+		if (m1.p == 'ON') {
+			console.log("RULES", "Rule triggered: fridge is open" );
+			var t = setTimeout(sayHi, 10*1000);
+		} else {
+			console.log("RULES", "Rule triggered: fridge is closed" );	
+			clearTimeout(t);			
+		}
+    }
+}
+*/
+
+rule fridge_open {
+    when {		
+		c: Clock;	
+        m1: Message m1.t == "events/rflink/newkaku/00fb09de/a/cmd" && m1.changedTo("ON") && c.date == minutesFromNow(1) ;			
+    }
+    then {
+        console.log("RULES", "Rule triggered: fridge open ");
+        unchange(m1);
+    }
+}
+
+rule fridge_close {
+    when {
+
+        m1: Message m1.t == "events/rflink/newkaku/00fb09de/a/cmd" && m1.changedTo("OFF") ;			
+    }
+    then {
+        console.log("RULES", "Rule triggered: fridge closed ");
+        unchange(m1);		
+    }
+}
+
