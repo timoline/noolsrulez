@@ -1,4 +1,3 @@
-global t = 0;
 /*
 rule boilerwatertemperature {
     when {
@@ -65,4 +64,3 @@ rule fridge_close {
         unchange(m1);		
     }
 }
-
