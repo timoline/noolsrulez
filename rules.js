@@ -99,7 +99,8 @@ const flowOptions = {
 		forget: forget, 
 		unchange: unchange, 
 		publish: publish,
-		sayHi: sayHi
+		sayHi: sayHi,
+		subscribe: subscribe
 	}
 };
 
@@ -123,15 +124,23 @@ function forget(m) {
 // and keep the fact available to be used in other scenes as a condition.
 function unchange(m) {
     if (m.t in messages) {
-        console.log("RULES", "UNCHANGE <= " + m.t + ":" + m.p);        
+        console.log("RULES", "UNCHANGE <= " + m.t + ":" + m.p); 
     }
 }
 
+// publish to mqtt
 function publish(topic, payload, retained) {	
 	console.log("MQTT","Publish");
 	mclient.publish(topic, payload, {retain: retained});
 }
 
+//subscribe to mqtt
+function subscribe(topic) {	
+	mclient.subscribe(topic);	
+	console.log("MQTT",'Subscribe => ' + topic);
+}
+
+// test
 function sayHi() {
   console.log('Hello');
 }
