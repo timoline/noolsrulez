@@ -44,6 +44,8 @@ var Message = function(packet) {
 var Clock = function(){
     this.date = new Date();
 
+	this.dateISOString = (this.date).toISOString();
+	
 	Number.prototype.between = function (min, max) {
 		return this >= min && this <= max;
 	};	
@@ -55,6 +57,7 @@ var Clock = function(){
     this.getMinutes = function() {
         return this.date.getMinutes();
     };
+	
 
 /*	
     this.hoursIsBetween = function(a, b) {
@@ -95,12 +98,15 @@ var Clock = function(){
 const flowOptions = {
 	define: {
 		Message: Message, 
-		Clock: Clock, 		
+		Clock: Clock		
+	},
+	scope: {
+		sayHi: sayHi,
 		forget: forget, 
 		unchange: unchange, 
 		publish: publish,
-		sayHi: sayHi,
-		subscribe: subscribe
+		subscribe: subscribe,
+		matchHoursMinutes: matchHoursMinutes
 	}
 };
 
@@ -145,6 +151,11 @@ function sayHi() {
   console.log('Hello');
 }
 
+function matchHoursMinutes(a,b){
+	if((new Date(a).setSeconds(00,000)) == (new Date(b).setSeconds(00,000))) return true;		
+	else return false;	
+}
+
 mclient = mqtt.connect(config.mqtt_broker, config.mqtt_port, config.mqtt_options); 
 mclient.publish('connected/' + config.app_name , '1');
 
@@ -155,6 +166,7 @@ mclient.on('connect', function () {
 	mclient.subscribe("events/otgw/otmonitor/boilerwatertemperature");				
 	mclient.subscribe("events/otgw/otmonitor/flame");	
 	mclient.subscribe("events/rflink/newkaku/00fb09de/a/cmd");	
+	mclient.subscribe("events/astronomy/SunlightTimes/sunset");
 });
 
 mclient.on('close', function () {
@@ -203,4 +215,4 @@ function matchtimer() {
     session.match();
 };
 
-setInterval(matchtimer,60*1000);//interval 1 second
+setInterval(matchtimer,60*1000);//interval 60 second

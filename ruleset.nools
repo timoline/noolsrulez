@@ -1,16 +1,30 @@
+rule sunset {
+    when {
+        c: Clock;		
+        m1: Message m1.t == "events/astronomy/SunlightTimes/sunset" && matchHoursMinutes(m1.p,c.date);
+		//m1: Message m1.t == "events/astronomy/SunlightTimes/sunset" ;		
+    }
+    then {
+		console.log("RULES", "Rule triggered: sunset " + (matchHoursMinutes(m1.p,c.date)));
+		//publish("actions/rflink/newkaku/015835ba/1","ON",false);			
+        //forget(m1);		
+    }
+}
 
+
+/*
 rule boilerwatertemperature {
     when {
         m1: Message m1.t == "events/otgw/otmonitor/boilerwatertemperature" ;
     }
     then {
-        console.log("RULES", "Rule triggered: boilerwatertemperature " + m1.p);		
-		subscribe("events/otgw/otmonitor/flame");
+        console.log("RULES", "Rule triggered: boilerwatertemperature " );		
+		subscribe("events/otgw/otmonitor/roomtemperature");
         unchange(m1);
     }
 }
 
-/*
+*/
 rule flame {
     when {
         m1: Message m1.t == "events/otgw/otmonitor/flame" && 
@@ -22,7 +36,7 @@ rule flame {
         forget(m1);
     }
 }
-*/
+
 
 /*
 rule fridge {
@@ -71,3 +85,5 @@ rule fridge_close {
     }
 }
 */
+
+
