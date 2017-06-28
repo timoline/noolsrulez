@@ -1,7 +1,17 @@
+'use strict';
+
 var nools = require("nools");
 var mqtt = require('mqtt');
 var config = require('./config.json');
-
+var subscriptions = require('./topics.json');
+/*
+var subscriptions = [ // Todo put in config or json file
+	"events/otgw/otmonitor/flame",
+	"events/rflink/newkaku/00fb09de/a/cmd",
+	"events/astronomy/SunlightTimes/sunset",
+	"events/astronomy/SunlightTimes/goldenHour"
+];
+*/
 var messages = {},
 	mclient, 
 	connected;
@@ -43,8 +53,6 @@ var Message = function(packet) {
 // Constructor for the clock class
 var Clock = function(){
     this.date = new Date();
-
-	this.dateISOString = (this.date).toISOString();
 	
 	Number.prototype.between = function (min, max) {
 		return this >= min && this <= max;
@@ -56,8 +64,7 @@ var Clock = function(){
 
     this.getMinutes = function() {
         return this.date.getMinutes();
-    };
-	
+    };	
 
 /*	
     this.hoursIsBetween = function(a, b) {
@@ -136,14 +143,14 @@ function unchange(m) {
 
 // publish to mqtt
 function publish(topic, payload, retained) {	
-	console.log("MQTT","Publish");
+	console.log("MQTT","Publish => " + topic + ":" + payload);
 	mclient.publish(topic, payload, {retain: retained});
 }
 
 //subscribe to mqtt
 function subscribe(topic) {	
 	mclient.subscribe(topic);	
-	console.log("MQTT",'Subscribe => ' + topic);
+	console.log("MQTT","Subscribe => " + topic);
 }
 
 // test
@@ -152,7 +159,7 @@ function sayHi() {
 }
 
 function matchHoursMinutes(a,b){
-	if((new Date(a).setSeconds(00,000)) == (new Date(b).setSeconds(00,000))) return true;		
+	if((new Date(a).setSeconds(0,0)) == (new Date(b).setSeconds(0,0))) return true;		
 	else return false;	
 }
 
@@ -162,11 +169,12 @@ mclient.publish('connected/' + config.app_name , '1');
 mclient.on('connect', function () {
     connected = true;
     console.log("MQTT",'connected => ' + config.mqtt_broker);
-	//console.log(topic);
-	mclient.subscribe("events/otgw/otmonitor/boilerwatertemperature");				
-	mclient.subscribe("events/otgw/otmonitor/flame");	
-	mclient.subscribe("events/rflink/newkaku/00fb09de/a/cmd");	
-	mclient.subscribe("events/astronomy/SunlightTimes/sunset");
+
+    subscriptions.topics.forEach(function (topic) {
+        console.log("MQTT",'subscribe ' + topic);
+        mclient.subscribe(topic);
+    });	
+	
 });
 
 mclient.on('close', function () {
